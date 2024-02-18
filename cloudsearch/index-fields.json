@@ -1,0 +1,137 @@
+{
+    "IndexFields": [
+        {
+            "Options": {
+                "IndexFieldName": "case_number",
+                "IndexFieldType": "literal",
+                "LiteralOptions": {
+                    "FacetEnabled": true,
+                    "SearchEnabled": true,
+                    "ReturnEnabled": true,
+                    "SortEnabled": true
+                }
+            },
+            "Status": {
+                "CreationDate": "2024-02-17T14:30:16.727Z",
+                "UpdateDate": "2024-02-17T14:42:59.747Z",
+                "UpdateVersion": 14,
+                "State": "Active",
+                "PendingDeletion": false
+            }
+        },
+        {
+            "Options": {
+                "IndexFieldName": "case_uid",
+                "IndexFieldType": "literal",
+                "LiteralOptions": {
+                    "FacetEnabled": true,
+                    "SearchEnabled": true,
+                    "ReturnEnabled": true,
+                    "SortEnabled": true
+                }
+            },
+            "Status": {
+                "CreationDate": "2024-02-17T14:30:16.727Z",
+                "UpdateDate": "2024-02-17T14:42:59.747Z",
+                "UpdateVersion": 14,
+                "State": "Active",
+                "PendingDeletion": false
+            }
+        },
+        {
+            "Options": {
+                "IndexFieldName": "date",
+                "IndexFieldType": "date",
+                "DateOptions": {
+                    "FacetEnabled": true,
+                    "SearchEnabled": true,
+                    "ReturnEnabled": true,
+                    "SortEnabled": true
+                }
+            },
+            "Status": {
+                "CreationDate": "2024-02-17T15:43:21.554Z",
+                "UpdateDate": "2024-02-17T15:53:48.356Z",
+                "UpdateVersion": 37,
+                "State": "Active",
+                "PendingDeletion": false
+            }
+        },
+        {
+            "Options": {
+                "IndexFieldName": "id",
+                "IndexFieldType": "literal",
+                "LiteralOptions": {
+                    "FacetEnabled": true,
+                    "SearchEnabled": true,
+                    "ReturnEnabled": true,
+                    "SortEnabled": true
+                }
+            },
+            "Status": {
+                "CreationDate": "2024-02-17T14:53:19.552Z",
+                "UpdateDate": "2024-02-17T15:47:38.096Z",
+                "UpdateVersion": 33,
+                "State": "Active",
+                "PendingDeletion": false
+            }
+        },
+        {
+            "Options": {
+                "IndexFieldName": "name",
+                "IndexFieldType": "text",
+                "TextOptions": {
+                    "ReturnEnabled": true,
+                    "SortEnabled": true,
+                    "HighlightEnabled": true,
+                    "AnalysisScheme": "_ru_default_"
+                }
+            },
+            "Status": {
+                "CreationDate": "2024-02-17T15:42:50.817Z",
+                "UpdateDate": "2024-02-17T15:53:48.356Z",
+                "UpdateVersion": 37,
+                "State": "Active",
+                "PendingDeletion": false
+            }
+        },
+        {
+            "Options": {
+                "IndexFieldName": "text",
+                "IndexFieldType": "text",
+                "TextOptions": {
+                    "ReturnEnabled": false,
+                    "SortEnabled": true,
+                    "HighlightEnabled": true,
+                    "AnalysisScheme": "_ru_default_"
+                }
+            },
+            "Status": {
+                "CreationDate": "2024-02-17T15:42:50.817Z",
+                "UpdateDate": "2024-02-17T15:53:48.356Z",
+                "UpdateVersion": 37,
+                "State": "Active",
+                "PendingDeletion": false
+            }
+        },
+        {
+            "Options": {
+                "IndexFieldName": "url",
+                "IndexFieldType": "literal",
+                "LiteralOptions": {
+                    "FacetEnabled": true,
+                    "SearchEnabled": true,
+                    "ReturnEnabled": true,
+                    "SortEnabled": true
+                }
+            },
+            "Status": {
+                "CreationDate": "2024-02-17T15:42:50.817Z",
+                "UpdateDate": "2024-02-17T15:53:48.356Z",
+                "UpdateVersion": 37,
+                "State": "Active",
+                "PendingDeletion": false
+            }
+        }
+    ]
+}

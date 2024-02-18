@@ -37,7 +37,6 @@ def process_cases():
     with open(DIR + 'data.json') as f:
         cases = ijson.items(f, 'item')
         for case in cases:
-            # print(case)
             if case['dateReg'] < '2022-01-01':
                 continue
             if 'attachments' in case:
@@ -87,5 +86,5 @@ def get_document_text(url: str) -> str:
 
 
 if __name__ == '__main__':
-    # download_json()
+    download_json()
     process_cases()
