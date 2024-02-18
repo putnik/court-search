@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Поиск по решениям Мосгорсуда</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="container">
+    <div class="row justify-content-md-center">
+        <div class="col col-lg-8 col-md-10 col-sm-12">
+            <form id="search-form">
+                <div class="mb-3">
+                    <label for="search-query" class="form-label">Поиск по тексту</label>
+                    <input class="form-control" id="search-query">
+                </div>
+                <div class="mb-3">
+                    <label for="codex-articles" class="form-label">Статья</label>
+                    <input class="form-control" id="codex-articles">
+                </div>
+                <button type="submit" class="btn btn-primary">Искать</button>
+            </form>
+        </div>
+    </div>
+    <div class="row justify-content-md-center">
+        <div class="col col-lg-8 col-md-10 col-sm-12" id="cards">
+        </div>
+    </div>
+    <script>
+        function cleanString(str) {
+          if (!str) {
+            return '';
+          }
+
+          return str.replace("'", '')
+            .replace('"', '')
+            .replace('\\', '')
+            .trim();
+        }
+
+        $('#search-form').on('submit', function (event) {
+          event.preventDefault();
+
+          const api = 'https://mlw0jcw689.execute-api.us-east-1.amazonaws.com/case';
+          const query = [];
+
+          let search = cleanString($('#search-query').val());
+          if (search) {
+            query.push("'" + search + "'");
+          }
+
+          const codexArticles = cleanString($('#codex-articles').val());
+          if (codexArticles) {
+            query.push("(term field=codex_articles '" + codexArticles + "')");
+          }
+
+          const params = {
+            'q.parser': 'structured',
+            'q': '(and ' + query.join(' ') + ')',
+          };
+          $.getJSON(api + '?' + $.param(params), null, function (data) {
+            $('#cards').children().remove();
+            for (hit in data.hits.hit) {
+              const caseData = data.hits.hit[hit].fields;
+
+              let text = caseData['attachments'].join(' ').replace('\n', ' ');
+              while (search.length && text.indexOf(search) === -1) {
+                search = search.substring(0, search.length - 1);
+              }
+
+              if (search.length) {
+                const index = text.indexOf(search);
+                text = '…' + text.substring(index - 200, index + 200) + '…';
+              } else {
+                text = text.substring(0, 300) + '…';
+              }
+
+              const $cardHeader = $('<div class="card-header">').text(caseData['number']);
+              const $cardBody = $('<div class="card-body">')
+                .append(
+                  $('<div class="card-subtitle mb-2 text-body-secondary">')
+                    .text(caseData['date_reg'].replace('T00:00:00Z', '') + ' / ' + caseData['court_name'] + ' / ' + caseData['judge'])
+                )
+                .append(
+                  $('<div class="card-subtitle mb-2 text-body-secondary">')
+                    .text(caseData['participants'].join(', ') + ' / ' + caseData['codex_articles'].join(', '))
+                )
+                .append($('<p class="card-text" style="font-size:smaller">').text(text))
+                .append(
+                  $('<a class="card-link">')
+                    .attr('href', caseData['url'])
+                    .attr('target', '_blanc')
+                    .text('Открыть')
+                );
+              $('<div class="card mt-3">')
+                .append($cardHeader)
+                .append($cardBody)
+                .appendTo($('#cards'));
+            }
+          });
+        });
+    </script>
+</div>
+</body>
+</html>

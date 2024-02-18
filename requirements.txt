@@ -1,0 +1,4 @@
+ijson
+python-magic
+textract
+wget
