@@ -10,17 +10,44 @@
 <body>
 <div class="container">
     <div class="row justify-content-md-center">
-        <div class="col col-lg-8 col-md-10 col-sm-12">
-            <form id="search-form">
-                <div class="mb-3">
+        <div class="col col-lg-8 col-md-10 col-sm-12 border border-secondary-subtle mt-3 p-3">
+            <form id="search-form" class="row g-3">
+                <div class="col-md-12">
                     <label for="search-query" class="form-label">Поиск по тексту</label>
-                    <input class="form-control" id="search-query">
+                    <input class="form-control border-primary" id="search-query">
                 </div>
-                <div class="mb-3">
+                <div class="col-md-4">
+                    <label for="number" class="form-label">Номер дела</label>
+                    <input class="form-control" id="number" name="number">
+                </div>
+                <div class="col-md-4">
                     <label for="codex-articles" class="form-label">Статья</label>
-                    <input class="form-control" id="codex-articles">
+                    <input class="form-control" id="codex-articles" name="codex_articles">
                 </div>
-                <button type="submit" class="btn btn-primary">Искать</button>
+                <div class="col-md-4">
+                    <label for="participants" class="form-label">Участники</label>
+                    <input class="form-control" id="participants" name="participants">
+                </div>
+                <div class="col-md-4">
+                    <label for="court-name" class="form-label">Название суда</label>
+                    <input class="form-control" id="court-name" name="court_name">
+                </div>
+                <div class="col-md-4">
+                    <label for="judge" class="form-label">Судья</label>
+                    <input class="form-control" id="judge" name="judge">
+                </div>
+                <div class="col-md-4">
+                    <label for="search-sort" class="form-label">Сортировка</label>
+                    <select class="form-select" id="search-sort">
+                        <option value="date_reg desc">Последние</option>
+                        <option value="_score desc">Более релевантные</option>
+                    </select>
+                </div>
+                <div class="col-md-8">
+                    <button type="submit" class="btn btn-primary">Искать</button>
+                </div>
+                <div class="col-md-4" id="search-found">
+                </div>
             </form>
         </div>
     </div>
@@ -28,6 +55,12 @@
         <div class="col col-lg-8 col-md-10 col-sm-12" id="cards">
         </div>
     </div>
+    <div class="row justify-content-md-center">
+        <div class="col col-lg-8 col-md-10 col-sm-12 p-3">
+            <button type="button" class="btn btn-primary" id="show-more" style="display:none" data-start="0">Показать ещё 50</button>
+        </div>
+    </div>
+
     <script>
         function cleanString(str) {
           if (!str) {
@@ -40,37 +73,40 @@
             .trim();
         }
 
-        $('#search-form').on('submit', function (event) {
-          event.preventDefault();
-
+        function loadData(search, fields, sort, start) {
           const api = 'https://mlw0jcw689.execute-api.us-east-1.amazonaws.com/case';
-          const query = [];
 
-          let search = cleanString($('#search-query').val());
+          const size = 50;
+
+          const query = [];
           if (search) {
             query.push("'" + search + "'");
           }
-
-          const codexArticles = cleanString($('#codex-articles').val());
-          if (codexArticles) {
-            query.push("(term field=codex_articles '" + codexArticles + "')");
+            for (const field in fields) {
+            query.push("(term field=" + field + " '" + fields[field] + "')");
           }
 
           const params = {
             'q.parser': 'structured',
             'q': '(and ' + query.join(' ') + ')',
+            'sort': sort,
+            'size': size,
+            'start': start,
           };
+
           $.getJSON(api + '?' + $.param(params), null, function (data) {
-            $('#cards').children().remove();
+            if (start == 0) {
+                $('#cards').children().remove();
+            }
             for (hit in data.hits.hit) {
               const caseData = data.hits.hit[hit].fields;
 
               let text = caseData['attachments'].join(' ').replace('\n', ' ');
-              while (search.length && text.indexOf(search) === -1) {
+              while (search && search.length && text.indexOf(search) === -1) {
                 search = search.substring(0, search.length - 1);
               }
 
-              if (search.length) {
+              if (search && search.length) {
                 const index = text.indexOf(search);
                 text = '…' + text.substring(index - 200, index + 200) + '…';
               } else {
@@ -99,7 +135,45 @@
                 .append($cardBody)
                 .appendTo($('#cards'));
             }
+
+          $('#search-found').text('Найдено ' + data.hits.found + ' дел');
+            const $showMore = $('#show-more');
+          $showMore
+              .data('search', search)
+              .data('fields', fields)
+              .data('sort', sort)
+              .data('start', $showMore.data('start') + size)
+              .show();
           });
+        }
+
+        const $form = $('#search-form');
+        $form.on('submit', function (event) {
+          event.preventDefault();
+
+          let search = cleanString($('#search-query').val());
+          const fields = {}
+
+          $form.find('input[name]').each(function () {
+            const $field = $(this);
+            const value = cleanString($field.val());
+            if (!value) {
+                return;
+            }
+            fields[$field.attr('name')] = value;
+          });
+
+          loadData(search, fields, $('#search-sort').val(), 0);
+        });
+
+        const $showMore = $('#show-more');
+        $showMore.on('click', function () {
+          loadData(
+              $showMore.data('search'),
+              $showMore.data('fields'),
+              $showMore.data('sort'),
+              $showMore.data('start')
+          );
         });
     </script>
 </div>
